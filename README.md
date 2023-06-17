@@ -1,24 +1,36 @@
 # Carla
 
-#### 介绍
+----------------------
+
+### 介绍
 Carla:自定义智能系统（持续维护）
 
-#### 软件架构
-软件架构说明
+----------------------
+### 软件架构
 
+#### 1：文转音频- [text_to_speech](text_to_speech)
 
+#### 2：语音识别 - [speech_to_text](speech_to_text)
+
+#### 3：人脸识别- [opencv_face_detect](opencv_face_detect)
+
+#### 4：控制软件- [on_off_software](software)
+
+#### 5：控制硬件- [on_off_hardware](hardware)
+
+----------------------
 #### 安装教程
 
 1.  xxxx
 2.  xxxx
 3.  xxxx
-
+--------------------------------------------
 #### 使用说明
 
 1.  xxxx
 2.  xxxx
 3.  xxxx
-
+----------------------
 #### 参与贡献
 
 1.  Fork 本仓库
