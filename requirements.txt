@@ -2,3 +2,4 @@ pyttsx3==2.90
 opencv-python
 SpeechRecognition
 PocketSphinx
+whisper
