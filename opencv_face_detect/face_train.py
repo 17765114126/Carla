@@ -54,13 +54,11 @@ def ReFileName(dirPath):
 
 
 # 胡歌照读取
-dirPath_huge = r"D:\opt\hg"  # 文件路径
-huge = ReFileName(dirPath_huge)  # 调用函数
-
+huge = ReFileName("D:\opt\hg")  # 调用函数
 label_huge = np.array([0 for i in range(len(huge))])  # 标签处理
+
 # 霍建华照读取
-dirPath_huojianhua = r"D:\opt\hjh"  # 文件路径
-huojianhua = ReFileName(dirPath_huojianhua)  # 调用函数
+huojianhua = ReFileName("D:\opt\hjh")  # 调用函数
 label_huojianhua = np.array([1 for i in range(len(huojianhua))])  # 标签处理
 
 # 拼接并打乱数据特征和标签

@@ -1,7 +1,6 @@
 import cv2
 import utils
 
-
 config = utils.read_config("data/opencv_config.json")
 
 
@@ -67,7 +66,7 @@ def predict(image):
         return img
 
 
-test_img = cv2.imread("D:\opt\OIP-C.jpg")
+test_img = cv2.imread("D:\Testspace\carla\opencv_face_detect\img\me.jpg")
 # 执行预测
 pred_img = predict(test_img)
 cv2.imshow('result', pred_img)
