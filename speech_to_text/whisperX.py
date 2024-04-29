@@ -6,7 +6,9 @@ import librosa
 
 # 加载模型
 model = whisper.load_model("small")
-mp3Url = "output.wav"
+# mp3Url = "audio (4).wav"
+mp3Url = "G:\\Install_package\\python_source\\GPT-SoVITS\\adam.godigital\\2\\output_1.mp3"
+
 # 设置音频参数
 FORMAT = pyaudio.paInt16 # 16-bit PCM
 CHANNELS = 1 # 单声道
@@ -20,11 +22,20 @@ audio = pyaudio.PyAudio()
 
 
 # 音频转文字
-def file_to_text():
-    result = model.transcribe(mp3Url, language="Chinese")
+def file_to_text(mp3Url):
+    # result = model.transcribe(mp3Url, language="Chinese")
+    result = model.transcribe(mp3Url)
+
     print(", ".join([i["text"] for i in result["segments"] if i is not None]))
 
+if __name__ == '__main__':
+    mp3Url = "G:\\JJ\\3\\output_1.mp3"
 
+    file_to_text(mp3Url)
+    # real_time()
+
+# if __name__ == '__main__':
+#     file_to_text()
 THRESHOLD = 0.1  # 自定义的特征能量阈值
 
 
@@ -114,11 +125,6 @@ def real_time():
     stream.close()
     # 关闭pyaudio
     audio.terminate()
-
-
-if __name__ == '__main__':
-    # file_to_text()
-    real_time()
 
 
 def to_text1():
