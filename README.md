@@ -8,15 +8,15 @@ Carla:自定义智能系统（持续维护）
 ----------------------
 ### 软件架构
 
-#### 1：文转音频- [text_to_speech](text_to_speech)
+#### 1：文转音频- [text_to_speech](data/text_to_speech)
 
-#### 2：语音识别 - [speech_to_text](speech_to_text)
+#### 2：语音识别 - [speech_to_text](data/speech_to_text)
 
-#### 3：人脸识别- [opencv_face_detect](opencv_face_detect)
+#### 3：人脸识别- [opencv_face_detect](data/opencv_face_detect)
 
-#### 4：控制软件- [on_off_software](software)
+#### 4：控制软件- [on_off_software](data/software)
 
-#### 5：控制硬件- [on_off_hardware](hardware)
+#### 5：控制硬件- [on_off_hardware](data/hardware)
 
 ----------------------
 #### 安装教程

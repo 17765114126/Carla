@@ -1,7 +1,0 @@
-{
-  "data": {
-    "xmlUrl": "data/haarcascade_frontalface_default.xml",
-    "imgUrl": "img/faces.jpg",
-    "saveTrainUrl": "data/train.yml"
-  }
-}
