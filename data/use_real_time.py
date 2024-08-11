@@ -79,7 +79,7 @@ def listen_for_audio():
                 # 开始对话模式
                 # 语音转录文字调ollama
                 conversation_start_time = time.time()
-                while time.time() - conversation_start_time < 180:  # 3 分钟
+                while True:
                     audio_data = recording(5)
                     # 判断是否有人声
                     if speak(audio_data):
@@ -89,6 +89,11 @@ def listen_for_audio():
                         ollama_txt = ollama_api.ollama_chat(model_name, recognized_text)
                         print(ollama_txt)
                         pyttsX.speak(ollama_txt)
+                        # 重置计时器
+                        conversation_start_time = time.time()
+                    elif time.time() - conversation_start_time >= 180:
+                        # 如果三分钟内没有声音，则退出对话模式
+                        break
                     else:
                         # 如果没有人声，等待一小段时间后再次尝试录音
                         time.sleep(0.3)
