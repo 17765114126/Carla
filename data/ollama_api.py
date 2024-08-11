@@ -70,7 +70,7 @@ def ollama_chat(model_name, content):
             'content': content,
         },
     ])
-    print(json_read.json_format(response))
+    # print(json_read.json_format(response))
     return response['message']['content']
 
 

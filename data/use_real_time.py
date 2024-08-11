@@ -11,7 +11,7 @@ import ollama_api
 SAMPLE_RATE = 16000
 CHANNELS = 1
 DURATION = 1  # 持续时间
-model_path = "C:\\Users\\1\\.cache\\modelscope\\hub\\pengzhendong\\faster-whisper" + "-medium"
+model_path = "C:\\Users\\1\\.cache\\modelscope\\hub\\pengzhendong\\faster-whisper" + "-small"
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
@@ -71,8 +71,9 @@ def listen_for_audio():
             recognized_text = transcription(audio_data, "zh")
             print(recognized_text)
             # 检查是否识别到了关键词
-            recognized_text = "小C"
-            if "小C" in recognized_text:
+            keywords = ["小C", "小夕", "小溪", "小西", "小希", "小心"]
+            if any(keyword in recognized_text for keyword in keywords):
+                recognized_text = ""
                 # 生成音频并播放
                 pyttsX.speak("我在,你说")
                 # 开始对话模式
@@ -82,22 +83,26 @@ def listen_for_audio():
                     audio_data = recording(5)
                     # 判断是否有人声
                     if speak(audio_data):
-                        break
-                    recognized_text = transcription(audio_data, None)
-                    print(recognized_text)
-                    # 调用API
-                    ollama_txt = ollama_api.ollama_chat(model_name, recognized_text)
-                    pyttsX.speak(ollama_txt)
+                        recognized_text = transcription(audio_data, "zh")
+                        print(recognized_text)
+                        # 调用API
+                        ollama_txt = ollama_api.ollama_chat(model_name, recognized_text)
+                        print(ollama_txt)
+                        pyttsX.speak(ollama_txt)
+                    else:
+                        # 如果没有人声，等待一小段时间后再次尝试录音
+                        time.sleep(0.3)
                 # 如果三分钟内没有声音，则重新开始语音唤醒无限循环
                 continue
 
 
 def main():
     # 启动监听线程
-    thread = threading.Thread(target=listen_for_audio)
-    thread.start()
-    # 等待监听线程完成
-    thread.join()
+    # thread = threading.Thread(target=listen_for_audio)
+    # thread.start()
+    # # 等待监听线程完成
+    # thread.join()
+    listen_for_audio()
     try:
         while True:
             time.sleep(0.1)  # 减少CPU占用
