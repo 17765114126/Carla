@@ -1,6 +1,13 @@
-pyttsx3
-faster_whisper==1.0.1
+pyttsx3==2.90
+faster_whisper==0.3.0
 numpy<2
 requests==2.32.3
 sounddevice==0.4.7
-ollama
+ollama==0.3.1
+modelscope
+opencv-python
+
+
+
+
+

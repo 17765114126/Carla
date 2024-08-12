@@ -12,7 +12,7 @@ Carla:自定义智能系统（持续维护）
 
 #### 2：语音识别 - [speech_to_text](data/speech_to_text)
 
-#### 3：人脸识别- [opencv_face_detect](data/opencv_face_detect)
+#### 3：人脸识别- [opencv_face_detect](tool/opencv_face_detect)
 
 #### 4：控制软件- [on_off_software](data/software)
 

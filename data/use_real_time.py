@@ -1,6 +1,5 @@
 import sounddevice as sd
 import numpy as np
-import threading
 import time
 from faster_whisper import WhisperModel
 import os
@@ -11,7 +10,8 @@ import ollama_api
 SAMPLE_RATE = 16000
 CHANNELS = 1
 DURATION = 1  # 持续时间
-model_path = "C:\\Users\\1\\.cache\\modelscope\\hub\\pengzhendong\\faster-whisper" + "-small"
+# 模型路径 在windows下的缓存路径内
+model_path = os.environ['LOCALAPPDATA'] + ".cache\\modelscope\\hub\\pengzhendong\\faster-whisper" + "-small"
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
