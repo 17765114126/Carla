@@ -1,7 +1,7 @@
 from util import json_read
 from ollama import Client
 import requests
-
+import json
 host = "http://localhost:11434"
 client = Client(host=host)
 
@@ -10,7 +10,16 @@ def ollama_list():
     # 列表 列出本地可用的模型。
     data = requests.get(host + "/api/tags")
     # data = client.list()
-    return json_read.json_format(data)
+    print(data.status_code)
+    # 假设 data.content 包含上述字节串
+    decoded_content = data.content.decode('utf-8')
+
+    # 将字符串解析为 JSON 对象
+    json_data = json.loads(decoded_content)
+
+    # 格式化输出 JSON
+    formatted_json = json.dumps(json_data, indent=4)
+    return formatted_json
 
 
 def ollama_show(model_name):
@@ -210,8 +219,8 @@ def ollama_generate(model_name, prompt, stream):
 
 if __name__ == '__main__':
     model_name = 'llama3.1'
-    ollama_txt = ollama_chat(model_name, '天空是什么颜色')
-    # ollama_txt = ollama_list()
+    # ollama_txt = ollama_chat(model_name, '天空是什么颜色')
+    ollama_txt = ollama_list()
     # ollama_txt = ollama_show(model_name)
     # ollama_txt = ollama_delete("llama3:latest")
     print(ollama_txt)
