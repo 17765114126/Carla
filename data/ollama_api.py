@@ -1,22 +1,18 @@
 from util import json_read
-from ollama import Client
 import requests
 
 host = "http://localhost:11434"
-client = Client(host=host)
 
 
 def ollama_list():
     # 列表 列出本地可用的模型。
     data = requests.get(host + "/api/tags")
-    # data = client.list()
     return json_read.json_format(data)
 
 
 def ollama_show(model_name):
     # 显示有关模型的信息，包括详细信息、模型文件、模板、参数、许可证、系统提示符。
     data = requests.post(host + "/api/show", params={"name": model_name})
-    # data = client.show(model_name)
     return json_read.json_format(data)
 
 
@@ -28,27 +24,23 @@ def ollama_create(name):
     # modelfile（可选）：模型文件的内容
     # stream：（可选）如果响应将作为单个响应对象返回，而不是作为对象流返回false
     # path（可选）：模型文件的路径
+    #   modelfile = '''
+    # FROM llama3.1
+    # SYSTEM You are mario from super mario bros.
+    # '''
     data = requests.post(host + "/api/create", params={"name": name, "modelfile": ""})
-
-    modelfile = '''
-  FROM llama3.1
-  SYSTEM You are mario from super mario bros.
-  '''
-    data = client.create(model='example', modelfile=modelfile)
     return json_read.json_format(data)
 
 
 def ollama_copy():
     # 复制模型。使用现有模型中的另一个名称创建模型。
     data = requests.post(host + "/api/copy", params={"source": model_name, "destination": "backup"})
-    # data = client.copy('llama3.1', 'user/llama3.1')
     return json_read.json_format(data)
 
 
 def ollama_delete(model_name):
     # 删除模型及其数据。
     data = requests.delete(host + "/api/delete", params={"name": model_name})
-    # data = client.delete(model_name)
     return json_read.json_format(data)
 
 
@@ -60,7 +52,6 @@ def ollama_pull(model_name):
     # insecure：（可选）允许与库建立不安全的连接。仅在开发过程中从自己的库中提取时才使用此方法。
     # stream：（可选）如果响应将作为单个响应对象返回，而不是作为对象流返回false
     data = requests.post(host + "/api/pull", params={"name": model_name})
-    # data = client.pull(model_name)
     return json_read.json_format(data)
 
 
@@ -71,22 +62,19 @@ def ollama_push():
     # insecure：（可选）允许与库建立不安全的连接。仅在开发期间推送到库时才使用此方法。
     # stream：（可选）如果响应将作为单个响应对象返回，而不是作为对象流返回false
     data = requests.post(host + "/api/push", params={"name": model_name})
-    # data = client.push('user/llama3.1')
     return json_read.json_format(data)
 
 
 def ollama_embed():
     # 嵌入 从模型生成嵌入
     data = requests.post(host + "/api/embed", params={"model": model_name, "input": "Why is the sky blue?"})
-    # data = client.embeddings(model='llama3.1', prompt='The sky is blue because of rayleigh scattering')
     return json_read.json_format(data)
 
 
 def ollama_ps():
     # 列出正在运行的模型
     data = requests.get(host + "/api/ps")
-    data = client.ps()
-    # return json_read.json_format(data)
+    return json_read.json_format(data)
 
 
 def ollama_chat(model_name, messages, stream, tools):

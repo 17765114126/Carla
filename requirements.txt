@@ -3,7 +3,6 @@ faster_whisper==0.3.0
 numpy<2
 requests==2.32.3
 sounddevice==0.4.7
-ollama==0.3.1
 modelscope
 opencv-python
 
