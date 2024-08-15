@@ -1,4 +1,4 @@
-from util import requests_util
+from util import requests_util, util
 
 host = "http://localhost:11434"
 
@@ -82,7 +82,35 @@ def ollama_ps():
     return requests_util.get(host + "/api/ps")
 
 
-def ollama_chat(ollama_model, messages='', stream=None, tools=None, keep_alive=5):
+def ollama_generate(ollama_model, prompt, stream=None, keep_alive=5, images=None):
+    """
+    单次生成回答
+    model：（必填）模型名称
+    prompt：生成响应的提示
+    suffix：模型响应后的文本
+    images：（可选）base64 编码图像的列表（对于多模态模型，例如llava)
+
+    高级参数（可选）：
+    format：返回响应的格式。目前唯一接受的值是json
+    options：模型文件文档中列出的其他模型参数，例如temperature
+    system：系统消息 to（覆盖Modelfile)
+    template：要使用的提示模板（覆盖Modelfile)
+    context：从上一个请求返回的上下文参数，可用于保持简短的对话记忆/generate
+    stream：如果响应将作为单个响应对象返回，而不是作为对象流返回false
+    raw：如果未对提示应用任何格式设置。如果您在对 API 的请求中指定了完整的模板化提示，则可以选择使用该参数trueraw
+    keep_alive：控制模型在请求后将保持加载到内存中的时间（默认值：5m)
+    """
+    data = requests_util.post(host + "/api/generate", params={
+        "model": ollama_model,
+        "prompt": prompt,
+        "stream": False if stream is None else stream,
+        "images": images,
+        "keep_alive": keep_alive
+    })
+    return data['response']
+
+
+def ollama_chat(ollama_model, messages, stream=None, tools=None, keep_alive=5):
     """
     聊天 从模型生成响应
 
@@ -102,106 +130,77 @@ def ollama_chat(ollama_model, messages='', stream=None, tools=None, keep_alive=5
     options：模型文件文档中列出的其他模型参数，例如temperature
     stream：如果响应将作为单个响应对象返回，而不是作为对象流返回false
     keep_alive：控制模型在请求后将保持加载到内存中的时间（默认值：5m)
-
-    单次聊天请求 messages
-    [
-        {
-            "role": "user",
-            "content": "content"
-        }
-    ]
-
-    带历史记录聊天请求 messages
-    [
-        {
-          "role": "user",
-          "content": "why is the sky blue?"
-        },
-        {
-          "role": "assistant",
-          "content": "due to rayleigh scattering."
-        },
-        {
-          "role": "user",
-          "content": "how is that different than mie scattering?"
-        }
-      ]
-
-    聊天请求（带图片）messages:图像应以数组形式提供，单个图像以 Base64 编码。
-    [
-        {
-          "role": "user",
-          "content": "what is in this image?",
-          "images": []
-        }
-      ]
-
-    聊天请求 messages（使用工具）
-    [
-        {
-          "type": "function",
-          "function": {
-            "name": "get_current_weather",
-            "description": "Get the current weather for a location",
-            "parameters": {
-              "type": "object",
-              "properties": {
-                "location": {
-                  "type": "string",
-                  "description": "The location to get the weather for, e.g. San Francisco, CA"
-                },
-                "format": {
-                  "type": "string",
-                  "description": "The format to return the weather in, e.g. 'celsius' or 'fahrenheit'",
-                  "enum": ["celsius", "fahrenheit"]
-                }
-              },
-              "required": ["location", "format"]
-            }
-          }
-        }
-      ]
     """
-    data = requests_util.post(host + "/api/chat ", params={
+    data = requests_util.post(host + "/api/chat", params={
         "model": ollama_model,
         "messages": messages,
-        "stream": False if stream is None else stream
+        "stream": False if stream is None else stream,
+        "tools": tools,
+        "keep_alive": keep_alive
     })
-    # print(data)
+    print(data['message']['tool_calls'])
     return data['message']['content']
 
 
-def ollama_generate(ollama_model, prompt='', stream=None, keep_alive=5):
-    """
-    单次生成回答
-    model：（必填）模型名称
-    prompt：生成响应的提示
-    suffix：模型响应后的文本
-    images：（可选）base64 编码图像的列表（对于多模态模型，例如llava)
-
-    高级参数（可选）：
-    format：返回响应的格式。目前唯一接受的值是json
-    options：模型文件文档中列出的其他模型参数，例如temperature
-    system：系统消息 to（覆盖Modelfile)
-    template：要使用的提示模板（覆盖Modelfile)
-    context：从上一个请求返回的上下文参数，可用于保持简短的对话记忆/generate
-    stream：如果响应将作为单个响应对象返回，而不是作为对象流返回false
-    raw：如果未对提示应用任何格式设置。如果您在对 API 的请求中指定了完整的模板化提示，则可以选择使用该参数trueraw
-    keep_alive：控制模型在请求后将保持加载到内存中的时间（默认值：5m)
-    """
-    data = requests_util.post(host + "/api/generate ", params={
-        "model": ollama_model,
-        "prompt": prompt,
-        "stream": False if stream is None else stream
-    })
-    # print(data)
-    return data['message']['content']
+def get_current_weather(city):
+    return city + "天气晴朗"
 
 
 if __name__ == '__main__':
     model_name = 'llama3.1'
-    # ollama_txt = ollama_chat(model_name, '天空是什么颜色')
-    ollama_txt = ollama_generate(model_name, '天空是什么颜色')
+    # model_name = 'qwen2'
+    # model_name = 'gemma2'
+    # 带历史记录聊天示例
+    # messages = [
+    #     {
+    #         'role': 'user',
+    #         'content': '为什幺天空是蓝色的？',
+    #         # 聊天请求（带图片） 图像应以数组形式提供，单个图像以 Base64 编码。
+    #         "images": None
+    #     },
+    #     {
+    #         'role': 'assistant',
+    #         'content': '这是因为蓝光波长较短，通过大气散射后能量最强。',
+    #     },
+    #     {
+    #         "role": "user",
+    #         "content": "介绍下光的波长"
+    #     },
+    # ]
+    messages = [
+        {
+            'role': 'user',
+            'content': 'What is the weather today in Paris?'
+        },
+    ]
+    # 工具使用示例
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "get_current_weather",
+                "description": "Get the current weather for a location",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "location": {
+                            "type": "string",
+                            "description": "The location to get the weather for, e.g. San Francisco, CA"
+                        },
+                        "format": {
+                            "type": "string",
+                            "description": "The format to return the weather in, e.g. 'celsius' or 'fahrenheit'",
+                            "enum": ["celsius", "fahrenheit"]
+                        }
+                    },
+                    "required": ["location", "format"]
+                }
+            }
+        }
+    ]
+    ollama_txt = ollama_chat(model_name, messages, tools=tools)
+    # base64_image = util.image_to_base64("E://img//four.jpg")
+    # ollama_txt = ollama_generate(model_name, '水的化学式是什么', images=None)
     # ollama_txt = ollama_list()
     # ollama_txt = ollama_show(model_name)
     # ollama_txt = ollama_delete("llama3:latest")

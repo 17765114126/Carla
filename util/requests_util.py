@@ -11,7 +11,7 @@ def post(url, params=None):
     :return: Response 对象
     """
     try:
-        response = requests.post(url, params=params)
+        response = requests.post(url, json=params)
         response.raise_for_status()  # 如果响应状态码不是 200，则抛出异常
         return json_read.json_format(response)
     except requests.RequestException as e:

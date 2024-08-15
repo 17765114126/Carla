@@ -56,8 +56,8 @@ def json_format(response):
         parsed_json = json.loads(decoded_content)
 
         # 格式化 JSON 为易读的字符串
-        formatted_json = json.dumps(parsed_json, indent=4, separators=(',', ': '))
-        return formatted_json
+        # formatted_json = json.dumps(parsed_json, indent=4, separators=(',', ': '))
+        return parsed_json
     except UnicodeDecodeError as e:
         print(f"UnicodeDecodeError: {e}")
     except json.JSONDecodeError as e:

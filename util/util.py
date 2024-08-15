@@ -1,5 +1,6 @@
 import os
 import subprocess
+import base64
 
 
 # 打开文件夹
@@ -9,6 +10,28 @@ def open_folder():
     # Windows系统中"C盘/下载"文件夹的通用路径
     download_path = os.path.join('C:\\Users', os.getlogin(), 'Downloads')
     subprocess.run(['explorer', download_path])
+
+
+def images_to_base64(image_paths):
+    """
+    转换为 base64 编码并存储在一个数组中
+
+    image_paths 示例: ["path/to/your/image1.jpg", "path/to/your/image2.jpg"]
+    """
+    # 创建一个空列表来存储 base64 编码的图片
+    base64_images = []
+    for image_path in image_paths:
+        # 读取图片文件
+        with open(image_path, "rb") as image_file:
+            # 读取图片的二进制内容
+            binary_data = image_file.read()
+            # 使用 base64 编码
+            base64_encoded = base64.b64encode(binary_data)
+            # 解码为字符串
+            base64_string = base64_encoded.decode('utf-8')
+            # 添加到列表中
+            base64_images.append(base64_string)
+    return base64_images
 
 
 # 保存转录结果为SRT文件
