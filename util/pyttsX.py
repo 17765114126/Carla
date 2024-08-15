@@ -1,7 +1,7 @@
 import pyttsx3
 
 
-def speak(audioString):
+def speak(audio_string):
     # 初始化:
     engine = pyttsx3.init()
 
@@ -9,7 +9,7 @@ def speak(audioString):
     # engine.setProperty("voice", "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ZH-CN_HUIHUI_11.0")
 
     # 添加语音文本：
-    engine.say(audioString)
+    engine.say(audio_string)
 
     # 音量调节
     # vol = engine.getProperty('volume')
