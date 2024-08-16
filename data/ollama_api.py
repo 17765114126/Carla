@@ -1,4 +1,4 @@
-from util import requests_util, util
+from util import requests_util
 
 host = "http://localhost:11434"
 
@@ -25,11 +25,17 @@ def ollama_create(ollama_model):
     stream：（可选）如果响应将作为单个响应对象返回，而不是作为对象流返回false
     path（可选）：模型文件的路径
     """
-    # modelfile = '''
-    # FROM llama3.1
-    # SYSTEM You are mario from super mario bros.
-    # '''
-    return requests_util.post(host + "/api/create", params={"name": ollama_model, "modelfile": ""})
+    model_file = '''
+        FROM llama3.1
+    
+        PARAMETER temperature 1
+        PARAMETER num_ctx 4096
+    
+        """
+        You are Mario from Super Mario Bros. Answer as Mario, the assistant, only.
+        """
+    '''
+    return requests_util.post(host + "/api/create", params={"name": ollama_model, "modelfile": model_file})
 
 
 def ollama_copy(ollama_model):
@@ -199,7 +205,7 @@ if __name__ == '__main__':
         }
     ]
     ollama_txt = ollama_chat(model_name, messages, tools=tools)
-    # base64_image = util.image_to_base64("E://img//four.jpg")
+    # base64_image = file_util.image_to_base64("E://img//four.jpg")
     # ollama_txt = ollama_generate(model_name, '水的化学式是什么', images=None)
     # ollama_txt = ollama_list()
     # ollama_txt = ollama_show(model_name)

@@ -1,0 +1,76 @@
+# (1). 创建模型
+# ollama create choose-a-model-name -f ./Modelfile
+#
+# (2)运行模型
+# ollama run choose-a-model-name
+#
+
+# 从llama3.1构建
+FROM llama3.1
+
+# 设置自定义系统消息以指定聊天助手的行为
+SYSTEM """
+You are Mario from Super Mario Bros. Answer as Mario, the assistant, only.
+"""
+
+TEMPLATE
+"""
+[INST] {{ if .System }}<<SYS>>{{ .System }}<</SYS>>
+{{ end }}{{ .Prompt }} [/INST]
+"""
+PARAMETER stop [INST]
+PARAMETER stop [/INST]
+PARAMETER stop <<SYS>>
+PARAMETER stop <</SYS>>
+
+# 设置要使用的停止序列。当遇到这种模式时，LLM 将停止生成文本并返回。可以通过在模型文件中指定多个单独的参数来设置多个止损模式。
+PARAMETER stop "AI assistant:"
+
+# 将温度设置为1 [越高越有创意，越低越连贯]
+PARAMETER temperature 0.7
+
+# 将上下文窗口大小设置为4096，这控制LLM可以使用多少个令牌作为上下文来生成下一个令牌
+PARAMETER num_ctx 4096
+
+# 启用Mirostat采样以控制困惑。（默认：0， 0 =禁用，1 = Mirostat，2 = Mirostat 2.0）
+PARAMETER mirostat 0
+
+# 影响算法对生成文本反馈的响应速度。较低的学习率将导致调整速度较慢，而较高的学习率将使算法响应能力更强。（默认：0.1）
+PARAMETER mirostat_eta 0.1
+
+# 控制输出的一致性和多样性之间的平衡。值越小，文本的重点越集中、越连贯。（默认值：5.0）
+PARAMETER mirostat_tau 5.0
+
+# 设置模型向后看多远，以防止重复。（默认值：64,0 = 禁用，-1 = num_ctx）
+PARAMETER repeat_last_n 64
+
+# 设置对重复的惩罚力度。较高的值（例如，1.5）将更强烈地惩罚重复，而较低的值（例如，0.9）将更宽松。（默认值：1.1）
+PARAMETER repeat_penalty 1.1
+
+# 设置用于生成的随机数种子。将此值设置为特定数字将使模型为相同的提示生成相同的文本。（默认值：0）
+PARAMETER seed 42
+
+# 无尾部抽样用于减少输出中可能性较小的标记的影响。较高的值（例如 2.0）将大大减少影响，而值 1.0 将禁用此设置。（默认值：1）
+PARAMETER tfs_z 1
+
+# 生成文本时要预测的最大标记数。（默认值：128，-1 = 无限生成，-2 = 填充上下文）
+PARAMETER num_predict 42
+
+# 降低产生废话的可能性。较高的值（例如 100）将给出更多样化的答案，而较低的值（例如 10）将更保守。（默认值：40）
+PARAMETER top_k 40
+
+# 与 top-k 一起工作。较高的值（例如，0.95）将导致更多样化的文本，而较低的值（例如，0.5）将产生更集中和保守的文本。（默认值：0.9）
+PARAMETER top_p 0.9
+
+# 替代top_p，旨在确保质量和多样性的平衡。参数 p 表示相对于最有可能的令牌的概率，要考虑令牌的最小概率。例如，当 p=0.05 且最可能的令牌的概率为 0.9 时，值小于 0.045 的对数将被过滤掉。（默认值：0.0）
+PARAMETER min_p 0.05
+
+
+# MESSAGE 指令允许你为模型设置一个消息历史，以便在生成响应时参考。
+
+MESSAGE user Is Toronto in Canada?
+MESSAGE assistant yes
+MESSAGE user Is Sacramento in Canada?
+MESSAGE assistant no
+MESSAGE user Is Ontario in Canada?
+MESSAGE assistant yes

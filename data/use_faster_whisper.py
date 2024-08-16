@@ -1,8 +1,9 @@
 from faster_whisper import WhisperModel
 import os
+from util import download_model, file_util
 
 # 模型路径 在windows下的缓存路径内
-model_path = os.environ['LOCALAPPDATA'] + ".cache\\modelscope\\hub\\pengzhendong\\faster-whisper" + "-small"
+model_path = os.environ['LOCALAPPDATA'] + ".cache\\modelscope\\hub\\pengzhendong\\faster-whisper-" + "small"
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
@@ -11,6 +12,9 @@ model = WhisperModel(model_path, device="cpu", compute_type="int8")
 
 
 def transcription(audio_data, language_type):
+    if not file_util.check_folder(os.path.join(model_path, "model.bin")):
+        download_model.download_model("small")
+        return f"正在下载模型，请下载完毕后重试(可在控制台查看下载进度)"
     """
     faster_whisper 语音识别
     """

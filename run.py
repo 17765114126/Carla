@@ -1,6 +1,6 @@
 import time
 from util import pyttsX
-from data import use_sound,use_faster_whisper,ollama_api
+from data import use_sound, use_faster_whisper, ollama_api
 
 
 def listen_for_audio():
