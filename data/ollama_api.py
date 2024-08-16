@@ -1,4 +1,4 @@
-from util import requests_util
+from util.requests_util import get, post
 
 host = "http://localhost:11434"
 
@@ -7,14 +7,14 @@ def ollama_list():
     """
     列出 列出本地可用的模型。
     """
-    return requests_util.get(host + "/api/tags")
+    return get(host + "/api/tags")
 
 
 def ollama_show(ollama_model):
     """
     显示有关模型的信息，包括详细信息、模型文件、模板、参数、许可证、系统提示符。
     """
-    return requests_util.post(host + "/api/show", params={"name": ollama_model})
+    return post(host + "/api/show", params={"name": ollama_model})
 
 
 def ollama_create(ollama_model):
@@ -35,21 +35,21 @@ def ollama_create(ollama_model):
         You are Mario from Super Mario Bros. Answer as Mario, the assistant, only.
         """
     '''
-    return requests_util.post(host + "/api/create", params={"name": ollama_model, "modelfile": model_file})
+    return post(host + "/api/create", params={"name": ollama_model, "modelfile": model_file})
 
 
 def ollama_copy(ollama_model):
     """
     复制模型。使用现有模型中的另一个名称创建模型。
     """
-    return requests_util.post(host + "/api/copy", params={"source": ollama_model, "destination": "backup"})
+    return post(host + "/api/copy", params={"source": ollama_model, "destination": "backup"})
 
 
 def ollama_delete(ollama_model):
     """
     删除模型及其数据。
     """
-    return requests_util.delete(host + "/api/delete", params={"name": ollama_model})
+    return delete(host + "/api/delete", params={"name": ollama_model})
 
 
 def ollama_pull(ollama_model):
@@ -60,7 +60,7 @@ def ollama_pull(ollama_model):
     insecure：（可选）允许与库建立不安全的连接。仅在开发过程中从自己的库中提取时才使用此方法。
     stream：（可选）如果响应将作为单个响应对象返回，而不是作为对象流返回false
     """
-    return requests_util.post(host + "/api/pull", params={"name": ollama_model})
+    return post(host + "/api/pull", params={"name": ollama_model})
 
 
 def ollama_push(ollama_model):
@@ -71,21 +71,21 @@ def ollama_push(ollama_model):
     insecure：（可选）允许与库建立不安全的连接。仅在开发期间推送到库时才使用此方法。
     stream：（可选）如果响应将作为单个响应对象返回，而不是作为对象流返回false
     """
-    return requests_util.post(host + "/api/push", params={"name": ollama_model})
+    return post(host + "/api/push", params={"name": ollama_model})
 
 
 def ollama_embed(ollama_model):
     """
     嵌入 从模型生成嵌入
     """
-    return requests_util.post(host + "/api/embed", params={"model": ollama_model, "input": "Why is the sky blue?"})
+    return post(host + "/api/embed", params={"model": ollama_model, "input": "Why is the sky blue?"})
 
 
 def ollama_ps():
     """
     列出正在运行的模型
     """
-    return requests_util.get(host + "/api/ps")
+    return get(host + "/api/ps")
 
 
 def ollama_generate(ollama_model, prompt, stream=None, keep_alive=5, images=None):
@@ -106,7 +106,7 @@ def ollama_generate(ollama_model, prompt, stream=None, keep_alive=5, images=None
     raw：如果未对提示应用任何格式设置。如果您在对 API 的请求中指定了完整的模板化提示，则可以选择使用该参数trueraw
     keep_alive：控制模型在请求后将保持加载到内存中的时间（默认值：5m)
     """
-    data = requests_util.post(host + "/api/generate", params={
+    data = post(host + "/api/generate", params={
         "model": ollama_model,
         "prompt": prompt,
         "stream": False if stream is None else stream,
@@ -116,7 +116,7 @@ def ollama_generate(ollama_model, prompt, stream=None, keep_alive=5, images=None
     return data['response']
 
 
-def ollama_chat(ollama_model, messages, stream=None, tools=None, keep_alive=5):
+def ollama_chat(ollama_model, messages, stream=False, tools=None, keep_alive=5):
     """
     聊天 从模型生成响应
 
@@ -137,14 +137,14 @@ def ollama_chat(ollama_model, messages, stream=None, tools=None, keep_alive=5):
     stream：如果响应将作为单个响应对象返回，而不是作为对象流返回false
     keep_alive：控制模型在请求后将保持加载到内存中的时间（默认值：5m)
     """
-    data = requests_util.post(host + "/api/chat", params={
+    data = post(host + "/api/chat", params={
         "model": ollama_model,
         "messages": messages,
-        "stream": False if stream is None else stream,
-        "tools": tools,
-        "keep_alive": keep_alive
+        "stream": stream,
+        # "tools": tools,
+        # "keep_alive": keep_alive
     })
-    print(data['message']['tool_calls'])
+    # print(data['message']['tool_calls'])
     return data['message']['content']
 
 
@@ -173,12 +173,12 @@ if __name__ == '__main__':
     #         "content": "介绍下光的波长"
     #     },
     # ]
-    messages = [
-        {
-            'role': 'user',
-            'content': 'What is the weather today in Paris?'
-        },
-    ]
+    # messages = [
+    #     {
+    #         'role': 'user',
+    #         'content': 'What is the weather today in Paris?'
+    #     },
+    # ]
     # 工具使用示例
     tools = [
         {
@@ -203,6 +203,12 @@ if __name__ == '__main__':
                 }
             }
         }
+    ]
+    messages = [
+        {
+            'role': 'user',
+            'content': '天空什么颜色?'
+        },
     ]
     ollama_txt = ollama_chat(model_name, messages, tools=tools)
     # base64_image = file_util.image_to_base64("E://img//four.jpg")

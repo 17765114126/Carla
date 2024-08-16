@@ -1,5 +1,8 @@
 import sounddevice as sd
 import numpy as np
+from playsound import playsound
+from io import BytesIO
+import requests
 
 # 麦克风录音参数
 SAMPLE_RATE = 16000
@@ -40,3 +43,29 @@ def is_speak(audio_data):
     else:
         print("录音中没有人说话")
         return False
+
+
+def listen_for_audio(text):
+    # 定义请求的 URL
+    url = "http://127.0.0.1:5577"
+
+    # 定义请求的数据
+    data = {
+        "text": text
+    }
+    response = requests.post(url, json=data)
+    # 检查响应是否成功
+    if response.status_code == 200:
+        # 将响应的内容转换为字节流
+        audio_stream = BytesIO(response.content)
+
+        # 保存音频到文件
+        with open('audio.wav', 'wb') as audio_file:
+            audio_file.write(audio_stream.getvalue())
+
+        # 使用 playsound 播放音频文件
+        playsound('audio.wav')
+
+
+if __name__ == '__main__':
+    listen_for_audio()

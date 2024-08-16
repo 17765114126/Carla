@@ -7,17 +7,19 @@ def listen_for_audio():
     model_name = 'llama3.1'
     while True:
         # 语音唤醒
-        audio_data = use_sound.recording(1)
+        # audio_data = use_sound.recording(1)
         # 判断是否有人声
-        if use_sound.is_speak(audio_data):
-            recognized_text = use_faster_whisper.transcription(audio_data, "zh")
-            print(recognized_text)
+        # if use_sound.is_speak(audio_data):
+        #     recognized_text = use_faster_whisper.transcription(audio_data, "zh")
+        #     print(recognized_text)
+            recognized_text = "小夕"
             # 检查是否识别到了关键词
             keywords = ["小C", "小夕", "小溪", "小西", "小希", "小心"]
             if any(keyword in recognized_text for keyword in keywords):
                 recognized_text = ""
                 # 生成音频并播放
-                pyttsX.speak("我在,你说")
+                # pyttsX.speak("我在,你说")
+                use_sound.listen_for_audio("我在,你说")
                 # 开始对话模式
                 # 语音转录文字调ollama
                 conversation_start_time = time.time()
@@ -27,10 +29,17 @@ def listen_for_audio():
                     if use_sound.is_speak(audio_data):
                         recognized_text = use_faster_whisper.transcription(audio_data, "zh")
                         print(recognized_text)
+                        messages = [
+                            {
+                                'role': 'user',
+                                'content': recognized_text
+                            },
+                        ]
                         # 调用API
-                        ollama_txt = ollama_api.ollama_chat(model_name, recognized_text)
+                        ollama_txt = ollama_api.ollama_chat(model_name, messages)
                         print(ollama_txt)
-                        pyttsX.speak(ollama_txt)
+                        # pyttsX.speak(ollama_txt)
+                        use_sound.listen_for_audio(ollama_txt)
                         # 重置计时器
                         conversation_start_time = time.time()
                     elif time.time() - conversation_start_time >= 180:

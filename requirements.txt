@@ -3,10 +3,24 @@ faster_whisper==0.3.0
 numpy<2
 requests==2.32.3
 sounddevice==0.4.7
-# modelscope
+modelscope
 # opencv-python
 
 
 
 
 
+fastapi==0.110.0
+ffmpeg-python==0.2.0
+librosa==0.10.1
+transformers==4.38.2
+soundfile==0.12.1
+uvicorn==0.27.1
+torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pytorch-lightning==2.4.0
+matplotlib==3.9.2
+einops==0.8.0
+cn2an==0.5.22
+pypinyin==0.52.0
+jieba_fast==0.53
+playsound
