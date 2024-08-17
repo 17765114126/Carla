@@ -1,8 +1,5 @@
-import argparse
 import os
 import re
-import signal
-import sys
 import wave
 from io import BytesIO
 from time import time as ttime
@@ -11,29 +8,24 @@ import librosa
 import numpy as np
 import soundfile as sf
 import torch
-import uvicorn
-from AR.models.t2s_lightning_module import Text2SemanticLightningModule
-from fastapi import FastAPI, Request
-from fastapi.responses import StreamingResponse
-import _lib.cnhubert as cnhubert
-from _lib.mel_processing import spectrogram_torch
-from _lib.models import SynthesizerTrn
 from transformers import AutoModelForMaskedLM, AutoTokenizer
-from text import cleaned_text_to_sequence
-from text.cleaner import clean_text
-import json
+from vits.AR.models.t2s_lightning_module import Text2SemanticLightningModule
+import vits._lib.cnhubert as cnhubert
+from vits._lib.mel_processing import spectrogram_torch
+from vits._lib.models import SynthesizerTrn
+from vits.text import cleaned_text_to_sequence
+from vits.text.cleaner import clean_text
+from util_tool import json_read
 
-# 增加一个读取配置文件的功能
-with open("config.json", "r", encoding="utf-8") as f:
-    config = json.load(f)
-    cnhubert_path = config["cnhubert_path"]
-    bert_path = config["bert_path"]
-    sovits_path = config["sovits_path"]
-    gpt_path = config["gpt_path"]
-    default_refer_path = config["default_refer_path"]
-    default_refer_text = config["default_refer_text"]
-    default_refer_language = config["default_refer_language"]
-    is_half = config["is_half"]
+cnhubert_path = json_read.read_config("vits", "cnhubert_path")
+bert_path = json_read.read_config("vits", "bert_path")
+sovits_path = json_read.read_config("vits", "sovits_path")
+gpt_path = json_read.read_config("vits", "gpt_path")
+default_refer_path = json_read.read_config("vits", "default_refer_path")
+default_refer_text = json_read.read_config("vits", "default_refer_text")
+default_refer_language = json_read.read_config("vits", "default_refer_language")
+is_half = json_read.read_config("vits", "is_half")
+
 # 自动判断环境是否支持CUDA和DirectML
 if (torch.cuda.is_available()):
     print("CUDA可用，将使用CUDA进行推理加速。")
@@ -44,22 +36,6 @@ else:
     print("在本机没有发现可以用于加速的显卡，使用CPU进行推理运算。")
 
 # -----------------------
-
-# 如果要增加更多的参数选项，在这里设定
-parser = argparse.ArgumentParser(description="vits-SERVER")
-# parser.add_argument("-t", "--text", type=str, default='请输入文字，测试合成效果', help=f'.\runtime\python.exe .\api-ben2.py -t "输入要合成的文字"')
-# parser.add_argument("-f", "--huashu", type=str, default='', help=f'.\runtime\python.exe .\app.py -f ./huahsu.json')
-parser.add_argument("-drp", "--default_refer_path", type=str, default="", help="1/2")
-parser.add_argument("-drt", "--default_refer_text", type=str, default="", help="1/2")
-
-parser.add_argument("-p", "--port", type=int, default='8080', help="default: 9880")
-parser.add_argument("-a", "--bind_addr", type=str, default="127.0.0.1", help="default: 127.0.0.1")
-
-args = parser.parse_args()
-
-if args.default_refer_path and args.default_refer_text:
-    default_refer_path = args.default_refer_path
-    default_refer_text = args.default_refer_text
 
 cnhubert.cnhubert_base_path = cnhubert_path
 tokenizer = AutoTokenizer.from_pretrained(bert_path)
@@ -297,15 +273,7 @@ def tts(text, filename="", text_language="zh"):
 
 
 # refer_wav_path, prompt_text, prompt_language,
-def handle(command, text, text_language='zh'):
-    if command == "/restart":
-        os.execl('./runtime/python.exe', './runtime/python.exe', *sys.argv)
-    elif command == "ping":
-        return 'pong'
-    elif command == "/exit":
-        os.kill(os.getpid(), signal.SIGTERM)
-        exit(0)
-
+def handle(text, text_language='zh'):
     refer_wav_path, prompt_text, prompt_language = (
         default_refer_path,
         default_refer_text,
@@ -322,23 +290,4 @@ def handle(command, text, text_language='zh'):
     wav.seek(0)
 
     torch.cuda.empty_cache()
-    return StreamingResponse(wav, media_type="audio/wav")
-
-
-app = FastAPI()
-
-
-@app.post("/")
-async def tts_endpoint(request: Request):
-    json_post_raw = await request.json()
-    return handle(json_post_raw.get("command"), json_post_raw.get("text"), )
-
-
-@app.get("/")
-async def tts_endpoint(command: str = None, text: str = None, ):
-    print(command, text)
-    return handle(command, text)
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host='127.0.0.1', port=5577, workers=1)
+    return wav

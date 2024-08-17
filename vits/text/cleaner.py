@@ -1,6 +1,7 @@
-from vits.text import cleaned_text_to_sequence, symbols, chinese
+from vits.text import cleaned_text_to_sequence, symbols, chinese, english, japanese
 
-language_module_map = {"zh": chinese, }
+language_module_map = {"zh": chinese, "ja": japanese, "en": english}
+
 special = [
     ("%", "zh", "SP"),
     ("￥", "zh", "SP2"),

@@ -1,5 +1,5 @@
 import time
-from util import pyttsX
+from util_tool import pyttsX
 from data import use_sound, use_faster_whisper, ollama_api
 
 
@@ -7,12 +7,12 @@ def listen_for_audio():
     model_name = 'llama3.1'
     while True:
         # 语音唤醒
-        # audio_data = use_sound.recording(1)
+        audio_data = use_sound.recording(1)
         # 判断是否有人声
-        # if use_sound.is_speak(audio_data):
-        #     recognized_text = use_faster_whisper.transcription(audio_data, "zh")
-        #     print(recognized_text)
-            recognized_text = "小夕"
+        if use_sound.is_speak(audio_data):
+            recognized_text = use_faster_whisper.transcription(audio_data, "zh")
+            print(recognized_text)
+            # recognized_text = "小夕"
             # 检查是否识别到了关键词
             keywords = ["小C", "小夕", "小溪", "小西", "小希", "小心"]
             if any(keyword in recognized_text for keyword in keywords):
