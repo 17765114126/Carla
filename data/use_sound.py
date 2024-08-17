@@ -1,8 +1,9 @@
 import sounddevice as sd
 import numpy as np
-from playsound import playsound
-from io import BytesIO
-import requests
+from pydub import AudioSegment
+from simpleaudio import play_buffer
+import io
+from vits.server import handle
 
 # 麦克风录音参数
 SAMPLE_RATE = 16000
@@ -45,27 +46,32 @@ def is_speak(audio_data):
         return False
 
 
+def play_audio_from_stream(audio_stream):
+    # 将字节流转换为 AudioSegment 对象
+    audio = AudioSegment.from_file(io.BytesIO(audio_stream))
+
+    # 获取音频数据
+    raw_audio_data = audio.raw_data
+
+    # 获取音频的采样率
+    sample_rate = audio.frame_rate
+
+    # 获取音频的通道数
+    num_channels = audio.channels
+
+    # 获取音频的位深度
+    sample_width = audio.sample_width
+
+    # 使用 simpleaudio 播放音频
+    play_buffer(raw_audio_data, num_channels, sample_width, sample_rate)
+
+
 def listen_for_audio(text):
-    # 定义请求的 URL
-    url = "http://127.0.0.1:5577"
-
-    # 定义请求的数据
-    data = {
-        "text": text
-    }
-    response = requests.post(url, json=data)
-    # 检查响应是否成功
-    if response.status_code == 200:
-        # 将响应的内容转换为字节流
-        audio_stream = BytesIO(response.content)
-
-        # 保存音频到文件
-        with open('audio.wav', 'wb') as audio_file:
-            audio_file.write(audio_stream.getvalue())
-
-        # 使用 playsound 播放音频文件
-        playsound('audio.wav')
+    # 推理并获取字节流
+    audio_stream = handle(text)
+    # 直接播放字节流
+    play_audio_from_stream(audio_stream.getvalue())
 
 
 if __name__ == '__main__':
-    listen_for_audio()
+    listen_for_audio("天空是什么颜色呢,具体有几种呢？")
