@@ -1,6 +1,7 @@
 import os
 import subprocess
 import base64
+from pathlib import Path
 
 
 # 打开文件夹
@@ -44,6 +45,36 @@ def images_to_base64(image_paths):
             # 添加到列表中
             base64_images.append(base64_string)
     return base64_images
+
+
+# 删除文件
+def del_file(file_path):
+    # 检查文件是否存在
+    if os.path.exists(file_path):
+        # 删除文件
+        os.remove(file_path)
+
+
+def get_chats():
+    # 获取当前脚本所在目录，即项目根目录
+    project_root = Path(__file__).resolve().parent.parent
+    # 指定chats文件夹
+    chats_folder = project_root / 'chats'
+    # 确保 chats 文件夹存在
+    if not os.path.exists(chats_folder):
+        os.makedirs(chats_folder)
+    # 初始化一个空列表来保存文件名
+    filenames = []
+    # 遍历文件夹中的每个文件
+    for file_path in chats_folder.iterdir():
+        # 只处理文件，跳过子目录
+        if file_path.is_file():
+            # 去除文件扩展名并将结果添加到列表
+            file_path_stem = []
+            file_path_stem.append(file_path.stem)
+            file_path_stem.append("x")
+            filenames.append(file_path_stem)
+    return filenames
 
 
 # 保存转录结果为SRT文件

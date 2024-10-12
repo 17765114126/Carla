@@ -52,6 +52,7 @@ def listen_for_audio():
                 continue
 
 
+# 实时对话
 def main():
     # 启动监听线程
     # thread = threading.Thread(target=listen_for_audio)

@@ -1,4 +1,6 @@
-from util_tool.requests_util import get, post
+from util_tool.requests_util import get, post, delete
+from util_tool import json_read
+import json
 
 host = "http://localhost:11434"
 
@@ -7,7 +9,9 @@ def ollama_list():
     """
     列出 列出本地可用的模型。
     """
-    return get(host + "/api/tags")
+    return ["Llama 3.1", "gemma2", "Qwen2.5"]
+    # models_data = get(host + "/api/tags")
+    # return [model['name'] for model in models_data['models']]
 
 
 def ollama_show(ollama_model):
@@ -27,10 +31,10 @@ def ollama_create(ollama_model):
     """
     model_file = '''
         FROM llama3.1
-    
+
         PARAMETER temperature 1
         PARAMETER num_ctx 4096
-    
+
         """
         You are Mario from Super Mario Bros. Answer as Mario, the assistant, only.
         """
@@ -49,7 +53,9 @@ def ollama_delete(ollama_model):
     """
     删除模型及其数据。
     """
-    return delete(host + "/api/delete", params={"name": ollama_model})
+    # resp = delete(host + "/api/delete", params={"name": ollama_model})
+    # print(resp)
+    return f"模型{ollama_model}删除成功"
 
 
 def ollama_pull(ollama_model):
@@ -60,7 +66,9 @@ def ollama_pull(ollama_model):
     insecure：（可选）允许与库建立不安全的连接。仅在开发过程中从自己的库中提取时才使用此方法。
     stream：（可选）如果响应将作为单个响应对象返回，而不是作为对象流返回false
     """
-    return post(host + "/api/pull", params={"name": ollama_model})
+    # resp = post(host + "/api/pull", params={"name": ollama_model})
+    # print(resp)
+    return f"模型{ollama_model}拉取成功"
 
 
 def ollama_push(ollama_model):
@@ -137,15 +145,28 @@ def ollama_chat(ollama_model, messages, stream=False, tools=None, keep_alive=5):
     stream：如果响应将作为单个响应对象返回，而不是作为对象流返回false
     keep_alive：控制模型在请求后将保持加载到内存中的时间（默认值：5m)
     """
-    data = post(host + "/api/chat", params={
+    params = {
         "model": ollama_model,
         "messages": messages,
         "stream": stream,
         # "tools": tools,
         # "keep_alive": keep_alive
-    })
-    # print(data['message']['tool_calls'])
-    return data['message']['content']
+    }
+
+    # response = post(host + "/api/chat", params=params)
+    # if stream:
+    #     # 如果是流式模式，我们需要逐行读取响应
+    # for line in response.iter_lines():
+    #     if line:  # 过滤掉空行
+    #         decoded_line = line.decode('utf-8')
+    #         # 假设每行都是 JSON 格式的字符串
+    #         data = json.loads(decoded_line)
+    #         yield data['message']['content']
+    # else:
+    # 如果不是流式模式，直接返回整个响应
+    # data = json_read.json_format(response)
+    # return data['message']['content']
+    return "**今天天气真好!**"
 
 
 def get_current_weather(city):

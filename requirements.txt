@@ -1,13 +1,14 @@
-pyttsx3==2.90
-faster_whisper==0.3.0
+faster_whisper==1.0.1
 numpy<2
 requests==2.32.3
-sounddevice==0.4.7
 modelscope
+gradio==4.40.0
+pyttsx3==2.90
+sounddevice==0.4.7
 # opencv-python
 
-
-
+# 错误 大模型项目部署时Gradio Web页面打不开或者打开用不了及pydantic.errors.PydanticSchemaGenerationError
+# 解决方法 pip install fastapi==0.112.2
 
 
 
