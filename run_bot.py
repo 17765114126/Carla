@@ -1,7 +1,7 @@
 import gradio as gr
 import os
 import json
-from data import ollama_api
+from data import ollama_api, recording
 from util_tool import file_util
 
 
@@ -172,6 +172,16 @@ with gr.Blocks(title="carla", theme=dark_theme, css=css) as bot_webui:
         # 绑定新建对话按钮
         new_conversation_button.click(on_new_conversation, [chatbot, chat_input, filename_state],
                                       [chatbot, chat_input, filename_state])
+    with gr.Tab("实时转录"):
+        with gr.Row():
+            recording_button = gr.Button("开始/停止录音", variant="primary")
+            state_label = gr.Label("等待开始...")
+
+            recording_button.click(
+                recording.listen_for_audio,
+                inputs=[recording_button],
+                outputs=[state_label]
+            )
     with gr.Tab("语音模式"):
         # 音频组件，允许从麦克风录制
         audio_input = gr.Audio(label="点击对话", sources=["microphone"], type="filepath")
