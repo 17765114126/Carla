@@ -115,6 +115,14 @@ css = """
         width: 5%;
     }
 """
+
+
+def process_audio(audio):
+    # 在这里处理音频文件
+    # 这个函数应该返回你想要显示给用户的结果
+    return f"Received audio with length: {len(audio)} bytes"
+
+
 with gr.Blocks(title="carla", theme=dark_theme, css=css) as bot_webui:
     markdown = gr.Markdown(
         """
@@ -165,7 +173,45 @@ with gr.Blocks(title="carla", theme=dark_theme, css=css) as bot_webui:
         new_conversation_button.click(on_new_conversation, [chatbot, chat_input, filename_state],
                                       [chatbot, chat_input, filename_state])
     with gr.Tab("语音模式"):
-        gr.Audio(label="点击对话", sources=["microphone"])
+        # 音频组件，允许从麦克风录制
+        audio_input = gr.Audio(label="点击对话", sources=["microphone"], type="filepath")
+
+        # 显示处理结果的区域
+        output_text = gr.Textbox(label="处理结果")
+
+        # 自定义JS代码，用于监听鼠标按下和抬起事件以控制录音
+        js_code = """
+        () => {
+            const startRecording = (event) => {
+                // 当鼠标左键按下时开始录音
+                if (event.button === 0) {
+                    event.preventDefault();
+                    document.querySelector('[data-testid="audio-record-button"]').click();
+                }
+            };
+
+            const stopRecording = (event) => {
+                // 当鼠标左键释放时停止录音，并触发上传
+                if (event.button === 0) {
+                    event.preventDefault();
+                    document.querySelector('[data-testid="audio-stop-button"]').click();
+                    setTimeout(() => {
+                        document.querySelector('[data-testid="audio-file-upload-button"]').click();
+                    }, 100);
+                }
+            };
+
+            // 添加事件监听器
+            document.querySelector('[data-testid="audio-input"]').addEventListener('mousedown', startRecording);
+            document.querySelector('[data-testid="audio-input"]').addEventListener('mouseup', stopRecording);
+
+            // 如果用户离开页面或切换选项卡，确保录音被停止
+            window.addEventListener('blur', stopRecording, true);
+        }
+        """
+
+        # 将JS代码与音频组件关联
+        audio_input.change(fn=process_audio, inputs=[audio_input], outputs=output_text, js=js_code)
     with gr.Tab("设置"):
         # with gr.Accordion("高级设置", open=False):
         # gr.Text(label="token")
