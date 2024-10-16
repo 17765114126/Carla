@@ -3,8 +3,8 @@ import numpy as np
 from pydub import AudioSegment
 from simpleaudio import play_buffer
 import io
-from vits.server import handle
-
+# from vits.server import handle
+from vits.inference_main import handle
 # 麦克风录音参数
 SAMPLE_RATE = 16000
 CHANNELS = 1
