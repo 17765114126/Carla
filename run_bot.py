@@ -1,7 +1,7 @@
 import gradio as gr
 import os
 import json
-from data import ollama_api, recording
+from data import ollama_api, real_say
 from util_tool import file_util
 
 
@@ -100,6 +100,20 @@ def load_chat(filename):
     return []
 
 
+def start_recording():
+    # 开始录音的逻辑
+    real_say.start_recording()
+    # 返回更新后的按钮状态：显示停止按钮，隐藏开始按钮
+    return gr.update(visible=True), gr.update(visible=False)
+
+
+def stop_recording_and_process():
+    # 停止录音并处理的逻辑
+    result = real_say.stop_recording_and_process()
+    # 返回更新后的按钮状态：隐藏停止按钮，显示开始按钮
+    return gr.update(visible=True), gr.update(visible=False), result  # 注意这里返回了result
+
+
 # orange    green emerald     teal  cyan
 
 dark_theme = gr.themes.Base(
@@ -115,13 +129,6 @@ css = """
         width: 5%;
     }
 """
-
-
-def process_audio(audio):
-    # 在这里处理音频文件
-    # 这个函数应该返回你想要显示给用户的结果
-    return f"Received audio with length: {len(audio)} bytes"
-
 
 with gr.Blocks(title="carla", theme=dark_theme, css=css) as bot_webui:
     markdown = gr.Markdown(
@@ -172,56 +179,25 @@ with gr.Blocks(title="carla", theme=dark_theme, css=css) as bot_webui:
         # 绑定新建对话按钮
         new_conversation_button.click(on_new_conversation, [chatbot, chat_input, filename_state],
                                       [chatbot, chat_input, filename_state])
-    with gr.Tab("实时转录"):
-        with gr.Row():
-            recording_button = gr.Button("开始/停止录音", variant="primary")
-            state_label = gr.Label("等待开始...")
-
-            recording_button.click(
-                recording.listen_for_audio,
-                inputs=[recording_button],
-                outputs=[state_label]
-            )
+    # with gr.Tab("实时转录"):
+    #     with gr.Row():
+    #         recording_button = gr.Button("开始/停止录音", variant="primary")
+    #         state_label = gr.Label("等待开始...")
+    #
+    #         recording_button.click(
+    #             recording.listen_for_audio,
+    #             inputs=[recording_button],
+    #             outputs=[state_label]
+    #         )
     with gr.Tab("语音模式"):
-        # 音频组件，允许从麦克风录制
-        audio_input = gr.Audio(label="点击对话", sources=["microphone"], type="filepath")
+        output = gr.Textbox()
+        start_button = gr.Button("开始", variant="primary")
+        stop_button = gr.Button("停止", variant="primary", visible=False)  # 初始状态不显示停止按钮
 
-        # 显示处理结果的区域
-        output_text = gr.Textbox(label="处理结果")
+        # 绑定按钮事件
+        start_button.click(fn=start_recording, outputs=[stop_button, start_button])
+        stop_button.click(fn=stop_recording_and_process, outputs=[start_button, stop_button, output])
 
-        # 自定义JS代码，用于监听鼠标按下和抬起事件以控制录音
-        js_code = """
-        () => {
-            const startRecording = (event) => {
-                // 当鼠标左键按下时开始录音
-                if (event.button === 0) {
-                    event.preventDefault();
-                    document.querySelector('[data-testid="audio-record-button"]').click();
-                }
-            };
-
-            const stopRecording = (event) => {
-                // 当鼠标左键释放时停止录音，并触发上传
-                if (event.button === 0) {
-                    event.preventDefault();
-                    document.querySelector('[data-testid="audio-stop-button"]').click();
-                    setTimeout(() => {
-                        document.querySelector('[data-testid="audio-file-upload-button"]').click();
-                    }, 100);
-                }
-            };
-
-            // 添加事件监听器
-            document.querySelector('[data-testid="audio-input"]').addEventListener('mousedown', startRecording);
-            document.querySelector('[data-testid="audio-input"]').addEventListener('mouseup', stopRecording);
-
-            // 如果用户离开页面或切换选项卡，确保录音被停止
-            window.addEventListener('blur', stopRecording, true);
-        }
-        """
-
-        # 将JS代码与音频组件关联
-        audio_input.change(fn=process_audio, inputs=[audio_input], outputs=output_text, js=js_code)
     with gr.Tab("设置"):
         # with gr.Accordion("高级设置", open=False):
         # gr.Text(label="token")

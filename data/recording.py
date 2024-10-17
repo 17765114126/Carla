@@ -23,7 +23,7 @@ class AudioRecorder:
         with sd.InputStream(samplerate=fs, channels=2,
                             callback=lambda indata, frames, time, status: self.frames.append(indata.copy())):
             while self.recording:
-                pass  # 录音是实时的，无需模拟时长增加
+                pass
 
     def stop_recording(self):
         self.recording = False
