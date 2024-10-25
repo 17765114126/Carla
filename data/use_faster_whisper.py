@@ -1,6 +1,6 @@
 from faster_whisper import WhisperModel
 import os
-from util_tool import download_model, file_util
+from util import download_model, file_util
 
 # 模型路径 在windows下的缓存路径内
 model_path = "C:/Users/" + os.getlogin() + "/.cache/modelscope/hub/pengzhendong/faster-whisper" + "-" + "small"

@@ -1,5 +1,5 @@
 import time
-# from util_tool import pyttsX
+# from util import pyttsX
 from data import use_sound, use_faster_whisper, ollama_api
 
 
