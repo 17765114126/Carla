@@ -1,9 +1,7 @@
 faster_whisper==1.0.1
 numpy<2
 requests==2.32.3
-modelscope
 gradio==5.0.1
-pyttsx3==2.90
 sounddevice==0.4.7
 # opencv-python
 edge_tts

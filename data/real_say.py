@@ -2,7 +2,6 @@ import sounddevice as sd
 import numpy as np
 from scipy.io.wavfile import write
 from data import use_faster_whisper, ollama_api
-from util import pyttsX
 
 # 定义全局变量来存储录音数据
 audio_data = []
@@ -59,5 +58,5 @@ def stop_recording_and_process():
     if stream:
         stream.stop()
         stream.close()
-    pyttsX.speak(response)
+    # pyttsX.speak(response)
     return f"你说: {recognized_text}\n回复: {response}"
