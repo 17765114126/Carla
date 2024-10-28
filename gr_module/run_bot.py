@@ -1,10 +1,7 @@
-import os
-
-# 代码中设置代理和模型下载路径(需要放在最上面，否则不起作用)
-os.environ['HF_ENDPOINT'] = "https://hf-mirror.com/"
-os.environ['HF_HOME'] = 'D:/develop/hf-model'
-
 import gradio as gr
+from gr_module.setting import setting
+from gr_module.dialog import dialog
+from gr_module.chat import chat
 
 # orange    green emerald     teal  cyan
 dark_theme = gr.themes.Base(
@@ -22,10 +19,6 @@ css = """
 """
 
 with gr.Blocks(title="carla", theme=dark_theme, css=css) as bot_webui:
-    from gr_module.setting import setting
-    from gr_module.dialog import dialog
-    from gr_module.chat import chat
-
     markdown = gr.Markdown(
         """
         ## carla-V1.0
@@ -47,12 +40,13 @@ with gr.Blocks(title="carla", theme=dark_theme, css=css) as bot_webui:
     with gr.Tab("设置"):
         setting()
 
-if __name__ == '__main__':
+
+def run():
     # 启用队列功能
     # bot_webui.queue()
     bot_webui.launch(
         share=False,
         server_port=9536,
         inbrowser=True,
-        favicon_path="./static/icon.ico"
+        favicon_path="../static/icon.ico"
     )
