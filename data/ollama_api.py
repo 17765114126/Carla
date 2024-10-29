@@ -1,4 +1,4 @@
-from util.requests_util import get, post
+from util.requests_util import get, post, delete
 
 host = "http://localhost:11434"
 
@@ -7,9 +7,9 @@ def ollama_list():
     """
     列出 列出本地可用的模型。
     """
-    return ["Llama 3.1", "gemma2", "Qwen2.5"]
-    # models_data = get(host + "/api/tags")
-    # return [model['name'] for model in models_data['models']]
+    # return ["Llama 3.1", "gemma2", "Qwen2.5"]
+    models_data = get(host + "/api/tags")
+    return [model['name'] for model in models_data['models']]
 
 
 def ollama_show(ollama_model):
@@ -51,8 +51,8 @@ def ollama_delete(ollama_model):
     """
     删除模型及其数据。
     """
-    # resp = delete(host + "/api/delete", params={"name": ollama_model})
-    # print(resp)
+    resp = delete(host + "/api/delete", params={"name": ollama_model})
+    print(resp)
     return f"模型{ollama_model}删除成功"
 
 
@@ -151,7 +151,7 @@ def ollama_chat(ollama_model, messages, stream=False, tools=None, keep_alive=5):
         # "keep_alive": keep_alive
     }
 
-    # response = post(host + "/api/chat", params=params)
+    response = post(host + "/api/chat", params=params)
     # if stream:
     #     # 如果是流式模式，我们需要逐行读取响应
     # for line in response.iter_lines():
@@ -163,8 +163,8 @@ def ollama_chat(ollama_model, messages, stream=False, tools=None, keep_alive=5):
     # else:
     # 如果不是流式模式，直接返回整个响应
     # data = json_read.json_format(response)
-    # return response['message']['content']
-    return "**今天天气真好!**"
+    return response['message']['content']
+    # return "**今天天气真好!**"
 
 
 def get_current_weather(city):

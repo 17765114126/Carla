@@ -7,10 +7,10 @@ gradio==5.4.0
 # 解决方法 pip install fastapi==0.112.2
 sounddevice==0.4.7
 # opencv-python
-edge_tts==6.1.14
+edge_tts==6.1.13
 
 
-
+# ffmpeg-python
 
 
 #simpleaudio==1.0.4
