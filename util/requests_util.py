@@ -13,7 +13,7 @@ def post(url, params=None):
     try:
         response = requests.post(url, json=params)
         response.raise_for_status()  # 如果响应状态码不是 200，则抛出异常
-        return json.loads(response)
+        return json.loads(response.content)
     except requests.RequestException as e:
         print(f"请求失败: {e}")
         return None
@@ -30,7 +30,7 @@ def get(url, params=None):
     try:
         response = requests.get(url, params=params)
         response.raise_for_status()
-        return json.loads(response)
+        return json.loads(response.content)
     except requests.RequestException as e:
         print(f"请求失败: {e}")
         return None
@@ -47,7 +47,7 @@ def delete(url, params=None):
     try:
         response = requests.delete(url, params=params)
         response.raise_for_status()
-        return json.loads(response)
+        return json.loads(response.content)
     except requests.RequestException as e:
         print(f"请求失败: {e}")
         return None
